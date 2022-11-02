@@ -28,6 +28,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+
+
 const database = {
     users: [
         {
@@ -56,9 +58,13 @@ const database = {
     ]
 }
 
+
+
 app.get('/', (req, res) => {
     res.send(database.users);
 })
+
+
 
 app.post('/signin', (req, res) => {
     bcrypt.compare("apples", "$2a$10$ecPfqbdVsr8iye/O.AWYYuMtg0usmPDXvvN/t0z.KeCal..A9xH7O", function(err, res) {
@@ -75,14 +81,24 @@ bcrypt.compare("veggies", "$2a$10$ecPfqbdVsr8iye/O.AWYYuMtg0usmPDXvvN/t0z.KeCal.
 })
 
 
+
 app.post('/register', (req, res) => {
     const { email, name, password } = req.body;
+    const hash = bcrypt.hashSync(password); 
 
-    bcrypt.hash(password, null, null, function(err, hash) {
-        console.log(hash);
-    });
+    db.transaction(trx => {
+        trx.insert({
+            hash: hash,
+            email: email
+        })
+        .into('login')
+        .returning('email')
+        .then(loginEmail => {
+            
+        })
+    })
 
-    db('users')
+    return db('users')
     .returning('*')
     .insert({
         email: email,
@@ -94,6 +110,7 @@ app.post('/register', (req, res) => {
     })
     .catch(err => res.status(400).json('Unable to register'))
 })
+
 
 
 app.get('/profile/:id', (req, res) => {
@@ -125,18 +142,6 @@ app.put('/image', (req, res) => {
     .catch(err => res.status(400).json('unable to get entries'))
 
 })
-
-
-
-
-// Load hash from your password DB.
-// bcrypt.compare("bacon", hash, function(err, res) {
-//     // res == true
-// });
-// bcrypt.compare("veggies", hash, function(err, res) {
-//     // res = false
-// });
-
 
 
 app.listen(3000, () => {
