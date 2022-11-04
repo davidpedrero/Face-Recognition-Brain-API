@@ -17,11 +17,8 @@ const app = express();
 const db = knex({
     client: 'pg',
     connection: {
-        host : 'postgresql-animate-90622',
-        port : 5432,
-        user : 'davidpedrero',
-        password : '',
-        database : 'smart-brain'
+        host : process.env.DATABASE_URL,
+        ssl: true
     }
 });
 
