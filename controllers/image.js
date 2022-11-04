@@ -16,8 +16,10 @@ const handleAPICall = (req, res) => {
     .catch(err => res.status(400).json('Unable to work with API'))
 }
 
-const hangleImage = (req, res, db) => {
+const handleImage = (req, res, db) => {
     const { id } = req.body;
+    console.log(id)
+    console.log(req.body.id)
 
     db('users').where('id', '=', id)
     .increment('entries', 1)
@@ -30,6 +32,6 @@ const hangleImage = (req, res, db) => {
 }
 
 module.exports = {
-    hangleImage: hangleImage, 
-    handleAPICall: handleAPICall
+    handleImage,
+    handleAPICall
 }
